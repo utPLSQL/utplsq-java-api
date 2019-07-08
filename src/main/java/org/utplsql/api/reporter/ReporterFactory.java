@@ -140,6 +140,7 @@ public final class ReporterFactory implements ORADataFactory {
     }
 
     @Override
+    @Nullable
     public ORAData create(Datum d, int sqlType) throws SQLException {
         if (d == null) return null;
         if (d instanceof Struct) {

@@ -12,6 +12,7 @@ import org.utplsql.api.outputBuffer.OutputBuffer;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * This is a basic Reporter implementation, using ORAData interface
@@ -25,7 +26,8 @@ public abstract class Reporter implements ORAData {
     private String selfType;
     private String id;
     private Object[] attributes;
-    private boolean init = false;
+    private volatile boolean init = false;
+    private final CountDownLatch initFlag = new CountDownLatch(1);
 
     public Reporter(String typeName, Object[] attributes) {
         setTypeName(typeName);
@@ -49,7 +51,13 @@ public abstract class Reporter implements ORAData {
 
         initOutputBuffer(oraConn, compatibilityProxy);
 
+        initFlag.countDown();
+
         return this;
+    }
+
+    public void waitInit() throws InterruptedException {
+        initFlag.await();
     }
 
     public Reporter init(Connection con) throws SQLException {
@@ -105,7 +113,7 @@ public abstract class Reporter implements ORAData {
         return this.id;
     }
 
-
+    @Override
     public Datum toDatum(Connection c) throws SQLException {
         return (Datum) c.createStruct(getTypeName(), getAttributes());
     }

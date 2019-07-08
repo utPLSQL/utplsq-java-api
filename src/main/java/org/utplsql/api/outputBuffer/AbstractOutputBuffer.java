@@ -109,20 +109,9 @@ abstract class AbstractOutputBuffer implements OutputBuffer {
      */
     public List<String> fetchAll(Connection conn) throws SQLException {
 
-        try (CallableStatement cstmt = getLinesCursorStatement(conn)) {
-
-            cstmt.execute();
-            cstmt.setFetchSize(fetchSize);
-
-            try (ResultSet resultSet = (ResultSet) cstmt.getObject(1)) {
-
-                List<String> outputLines = new ArrayList<>();
-                while (resultSet.next()) {
-                    outputLines.add(resultSet.getString("text"));
-                }
-                return outputLines;
-            }
-        }
+        List<String> outputLines = new ArrayList<>();
+        fetchAvailable(conn, outputLines::add);
+        return outputLines;
     }
 
 

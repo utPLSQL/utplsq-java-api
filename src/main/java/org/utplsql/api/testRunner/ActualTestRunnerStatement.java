@@ -21,9 +21,9 @@ class ActualTestRunnerStatement extends AbstractTestRunnerStatement {
     @Override
     protected String getSql() {
         // Workaround because Oracle JDBC doesn't support passing boolean to stored procedures.
-        String colorConsoleStr = Boolean.toString(options.colorConsole);
-        String failOnErrors = Boolean.toString(options.failOnErrors);
-        String randomExecutionOrder = Boolean.toString(options.randomTestOrder);
+        String colorConsoleStr = Boolean.toString(options.isColorConsole());
+        String failOnErrors = Boolean.toString(options.isFailOnErrors());
+        String randomExecutionOrder = Boolean.toString(options.isRandomTestOrder());
 
         return
                 "BEGIN " +
@@ -49,14 +49,14 @@ class ActualTestRunnerStatement extends AbstractTestRunnerStatement {
     protected int createStatement() throws SQLException {
         int curParamIdx = super.createStatement();
 
-        callableStatement.setString(++curParamIdx, options.clientCharacterSet);
-        if ( options.randomTestOrderSeed == null ) {
+        callableStatement.setString(++curParamIdx, options.getClientCharacterSet().toString());
+        if (options.getRandomTestOrderSeed() == null) {
             callableStatement.setNull(++curParamIdx, Types.INTEGER);
         } else {
-            callableStatement.setInt(++curParamIdx, options.randomTestOrderSeed);
+            callableStatement.setInt(++curParamIdx, options.getRandomTestOrderSeed());
         }
 
-        if ( options.tags.size() == 0 ) {
+        if ( options.getTags().size() == 0 ) {
             callableStatement.setNull(++curParamIdx, Types.VARCHAR);
         } else {
             callableStatement.setString(++curParamIdx, options.getTagsAsString());

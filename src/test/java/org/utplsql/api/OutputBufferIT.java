@@ -115,7 +115,7 @@ class OutputBufferIT extends AbstractDatabaseTest {
 
     @Test
     void getOutputFromSonarReporter() throws SQLException {
-        Reporter reporter = new DefaultReporter(CoreReporters.UT_SONAR_TEST_REPORTER.name(), null).init(newConnection());
+        Reporter reporter = new DefaultReporter(CoreReporters.UT_COVERAGE_HTML_REPORTER.name(), null).init(newConnection());
 
         new TestRunner()
                 .addPath(getUser())

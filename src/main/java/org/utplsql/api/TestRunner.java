@@ -30,29 +30,29 @@ public class TestRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(TestRunner.class);
 
-    private final TestRunnerOptions options = new TestRunnerOptions();
+    private final TestRunnerOptionsImpl options = new TestRunnerOptionsImpl();
     private final List<String> reporterNames = new ArrayList<>();
     private CompatibilityProxy compatibilityProxy;
     private ReporterFactory reporterFactory;
 
     public TestRunner addPath(String path) {
-        options.pathList.add(path);
+        options.getPathList().add(path);
         return this;
     }
 
     public TestRunner addPathList(List<String> paths) {
-        options.pathList.addAll(paths);
+        options.getPathList().addAll(paths);
         return this;
     }
 
     public TestRunner addReporter(Reporter reporter) {
-        options.reporterList.add(reporter);
+        options.getReporterList().add(reporter);
         return this;
     }
 
     public TestRunner addReporter(String reporterName) {
         if (reporterFactory != null) {
-            options.reporterList.add(reporterFactory.createReporter(reporterName));
+            options.getReporterList().add(reporterFactory.createReporter(reporterName));
         } else {
             reporterNames.add(reporterName);
         }
@@ -65,32 +65,32 @@ public class TestRunner {
     }
 
     public TestRunner addReporterList(List<Reporter> reporterList) {
-        options.reporterList.addAll(reporterList);
+        options.getReporterList().addAll(reporterList);
         return this;
     }
 
     public TestRunner addCoverageScheme(String coverageScheme) {
-        options.coverageSchemes.add(coverageScheme);
+        options.getCoverageSchemes().add(coverageScheme);
         return this;
     }
 
     public TestRunner includeObject(String obj) {
-        options.includeObjects.add(obj);
+        options.getIncludeObjects().add(obj);
         return this;
     }
 
     public TestRunner excludeObject(String obj) {
-        options.excludeObjects.add(obj);
+        options.getExcludeObjects().add(obj);
         return this;
     }
 
     public TestRunner includeObjects(List<String> obj) {
-        options.includeObjects.addAll(obj);
+        options.getIncludeObjects().addAll(obj);
         return this;
     }
 
     public TestRunner excludeObjects(List<String> obj) {
-        options.excludeObjects.addAll(obj);
+        options.getExcludeObjects().addAll(obj);
         return this;
     }
 
@@ -176,7 +176,7 @@ public class TestRunner {
 
         DatabaseInformation databaseInformation = new DefaultDatabaseInformation();
 
-        if ( options.skipCompatibilityCheck ) {
+        if ( options.isSkipCompatibilityCheck() ) {
             compatibilityProxy = new CompatibilityProxy(conn, Version.LATEST, databaseInformation);
         } else {
             compatibilityProxy = new CompatibilityProxy(conn, databaseInformation);
@@ -193,17 +193,17 @@ public class TestRunner {
         compatibilityProxy.failOnNotCompatible();
 
         logger.info("Initializing reporters");
-        for (Reporter r : options.reporterList) {
+        for (Reporter r : options.getReporterList()) {
             validateReporter(conn, r);
         }
 
-        if (options.pathList.isEmpty()) {
-            options.pathList.add(databaseInformation.getCurrentSchema(conn));
+        if (options.getPathList().isEmpty()) {
+            options.getPathList().add(databaseInformation.getCurrentSchema(conn));
         }
 
-        if (options.reporterList.isEmpty()) {
+        if (options.getReporterList().isEmpty()) {
             logger.info("No reporter given so choosing ut_documentation_reporter");
-            options.reporterList.add(new DocumentationReporter().init(conn));
+            options.getReporterList().add(new DocumentationReporter().init(conn));
         }
 
         TestRunnerStatement testRunnerStatement = null;

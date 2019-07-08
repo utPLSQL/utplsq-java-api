@@ -2,7 +2,7 @@ package org.utplsql.api.testRunner;
 
 import org.junit.jupiter.api.Test;
 import org.utplsql.api.AbstractDatabaseTest;
-import org.utplsql.api.TestRunnerOptions;
+import org.utplsql.api.TestRunnerOptionsImpl;
 import org.utplsql.api.Version;
 
 import java.sql.SQLException;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class TestRunnerStatementProviderIT extends AbstractDatabaseTest {
 
     AbstractTestRunnerStatement getTestRunnerStatementForVersion( Version version ) throws SQLException {
-        return (AbstractTestRunnerStatement)TestRunnerStatementProvider.getCompatibleTestRunnerStatement(version, new TestRunnerOptions(), getConnection());
+        return (AbstractTestRunnerStatement)TestRunnerStatementProvider.getCompatibleTestRunnerStatement(version, new TestRunnerOptionsImpl(), getConnection());
     }
 
     @Test

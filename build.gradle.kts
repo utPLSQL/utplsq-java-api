@@ -46,14 +46,14 @@ dependencies {
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation("org.slf4j:slf4j-api:1.7.25")
-    implementation("com.oracle.jdbc:ojdbc8:$ojdbcVersion") {
-        exclude(group = "com.oracle.jdbc")
-    }
+    implementation("com.oracle.jdbc:ojdbc8:$ojdbcVersion")
+    runtime("com.oracle.jdbc:ojdbc8:$ojdbcVersion")
     implementation("com.oracle.jdbc:orai18n:$ojdbcVersion")
 
     // Use Jupiter test framework
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
     testImplementation("org.hamcrest:hamcrest:2.1")
+    testImplementation("com.zaxxer:HikariCP:3.3.1")
 
     // deployer for packagecloud
     deployerJars("io.packagecloud.maven.wagon:maven-packagecloud-wagon:0.0.6")
@@ -67,6 +67,12 @@ tasks {
             events("passed", "skipped", "failed")
             exceptionFormat = TestExceptionFormat.FULL
             showStackTraces = true
+        }
+        doFirst {
+            environment("DB_URL", (project.findProperty("DB_URL") as String?) ?: System.getenv("DB_URL")
+            ?: "localhost:1521/ORCLPDB1")
+            environment("DB_USER", (project.findProperty("DB_USER") as String?) ?: System.getenv("DB_USER") ?: "app")
+            environment("DB_PASS", (project.findProperty("DB_PASS") as String?) ?: System.getenv("DB_PASS") ?: "app")
         }
     }
 
@@ -94,7 +100,7 @@ tasks {
         dependsOn(test)
         doFirst {
             environment("DB_URL", (project.findProperty("DB_URL") as String?) ?: System.getenv("DB_URL")
-            ?: "localhost:1521/XE")
+            ?: "localhost:1521/ORCLPDB1")
             environment("DB_USER", (project.findProperty("DB_USER") as String?) ?: System.getenv("DB_USER") ?: "app")
             environment("DB_PASS", (project.findProperty("DB_PASS") as String?) ?: System.getenv("DB_PASS") ?: "app")
         }

@@ -20,8 +20,8 @@ class Pre317TestRunnerStatement extends AbstractTestRunnerStatement {
     @Override
     protected String getSql() {
         // Workaround because Oracle JDBC doesn't support passing boolean to stored procedures.
-        String colorConsoleStr = Boolean.toString(options.colorConsole);
-        String failOnErrors = Boolean.toString(options.failOnErrors);
+        String colorConsoleStr = Boolean.toString(options.isColorConsole());
+        String failOnErrors = Boolean.toString(options.isFailOnErrors());
 
         return
                 "BEGIN " +
@@ -43,7 +43,7 @@ class Pre317TestRunnerStatement extends AbstractTestRunnerStatement {
     protected int createStatement() throws SQLException {
         int curParamIdx = super.createStatement();
 
-        callableStatement.setString(++curParamIdx, options.clientCharacterSet);
+        callableStatement.setString(++curParamIdx, options.getClientCharacterSet().toString());
 
         return curParamIdx;
     }

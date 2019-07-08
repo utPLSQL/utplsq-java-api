@@ -20,7 +20,7 @@ class Pre303TestRunnerStatement extends AbstractTestRunnerStatement {
     @Override
     protected String getSql() {
         // Workaround because Oracle JDBC doesn't support passing boolean to stored procedures.
-        String colorConsoleStr = Boolean.toString(options.colorConsole);
+        String colorConsoleStr = Boolean.toString(options.isColorConsole());
 
         return "BEGIN " +
                 "ut_runner.run(" +

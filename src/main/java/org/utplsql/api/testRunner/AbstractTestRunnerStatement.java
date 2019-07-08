@@ -22,11 +22,11 @@ abstract class AbstractTestRunnerStatement implements TestRunnerStatement {
 
     protected final TestRunnerOptions options;
     protected final CallableStatement callableStatement;
-    private final Connection conn;
+    private final OracleConnection conn;
 
-    public AbstractTestRunnerStatement(TestRunnerOptions options, Connection conn) throws SQLException {
+    protected AbstractTestRunnerStatement(TestRunnerOptions options, Connection conn) throws SQLException {
         this.options = options;
-        this.conn = conn;
+        this.conn = conn.unwrap(OracleConnection.class);
 
         callableStatement = conn.prepareCall(getSql());
 
@@ -37,53 +37,51 @@ abstract class AbstractTestRunnerStatement implements TestRunnerStatement {
 
     protected int createStatement() throws SQLException {
 
-        OracleConnection oraConn = conn.unwrap(OracleConnection.class);
-
         int paramIdx = 0;
 
         callableStatement.setArray(
-                ++paramIdx, oraConn.createOracleArray(CustomTypes.UT_VARCHAR2_LIST, options.pathList.toArray()));
+                ++paramIdx, conn.createOracleArray(CustomTypes.UT_VARCHAR2_LIST, options.getPathList().toArray()));
 
         callableStatement.setArray(
-                ++paramIdx, oraConn.createOracleArray(CustomTypes.UT_REPORTERS, options.reporterList.toArray()));
+                ++paramIdx, conn.createOracleArray(CustomTypes.UT_REPORTERS, options.getReporterList().toArray()));
 
-        if (options.coverageSchemes.isEmpty()) {
+        if (options.getCoverageSchemes().isEmpty()) {
             callableStatement.setNull(++paramIdx, Types.ARRAY, CustomTypes.UT_VARCHAR2_LIST);
         } else {
             callableStatement.setArray(
-                    ++paramIdx, oraConn.createOracleArray(CustomTypes.UT_VARCHAR2_LIST, options.coverageSchemes.toArray()));
+                    ++paramIdx, conn.createOracleArray(CustomTypes.UT_VARCHAR2_LIST, options.getCoverageSchemes().toArray()));
         }
 
-        if (options.sourceMappingOptions == null) {
+        if (options.getSourceMappingOptions() == null) {
             callableStatement.setNull(++paramIdx, Types.ARRAY, CustomTypes.UT_FILE_MAPPINGS);
         } else {
-            List<FileMapping> sourceMappings = FileMapper.buildFileMappingList(conn, options.sourceMappingOptions);
+            List<FileMapping> sourceMappings = FileMapper.buildFileMappingList(conn, options.getSourceMappingOptions());
 
             callableStatement.setArray(
-                    ++paramIdx, oraConn.createOracleArray(CustomTypes.UT_FILE_MAPPINGS, sourceMappings.toArray()));
+                    ++paramIdx, conn.createOracleArray(CustomTypes.UT_FILE_MAPPINGS, sourceMappings.toArray()));
         }
 
-        if (options.testMappingOptions == null) {
+        if (options.getTestMappingOptions() == null) {
             callableStatement.setNull(++paramIdx, Types.ARRAY, CustomTypes.UT_FILE_MAPPINGS);
         } else {
-            List<FileMapping> sourceMappings = FileMapper.buildFileMappingList(conn, options.testMappingOptions);
+            List<FileMapping> sourceMappings = FileMapper.buildFileMappingList(conn, options.getTestMappingOptions());
 
             callableStatement.setArray(
-                    ++paramIdx, oraConn.createOracleArray(CustomTypes.UT_FILE_MAPPINGS, sourceMappings.toArray()));
+                    ++paramIdx, conn.createOracleArray(CustomTypes.UT_FILE_MAPPINGS, sourceMappings.toArray()));
         }
 
-        if (options.includeObjects.isEmpty()) {
+        if (options.getIncludeObjects().isEmpty()) {
             callableStatement.setNull(++paramIdx, Types.ARRAY, CustomTypes.UT_VARCHAR2_LIST);
         } else {
             callableStatement.setArray(
-                    ++paramIdx, oraConn.createOracleArray(CustomTypes.UT_VARCHAR2_LIST, options.includeObjects.toArray()));
+                    ++paramIdx, conn.createOracleArray(CustomTypes.UT_VARCHAR2_LIST, options.getIncludeObjects().toArray()));
         }
 
-        if (options.excludeObjects.isEmpty()) {
+        if (options.getExcludeObjects().isEmpty()) {
             callableStatement.setNull(++paramIdx, Types.ARRAY, CustomTypes.UT_VARCHAR2_LIST);
         } else {
             callableStatement.setArray(
-                    ++paramIdx, oraConn.createOracleArray(CustomTypes.UT_VARCHAR2_LIST, options.excludeObjects.toArray()));
+                    ++paramIdx, conn.createOracleArray(CustomTypes.UT_VARCHAR2_LIST, options.getExcludeObjects().toArray()));
         }
 
         return paramIdx;

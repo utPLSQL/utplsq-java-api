@@ -21,7 +21,7 @@ public final class FileMapper {
     /**
      * Call the database api to build the custom file mappings.
      */
-    public static Array buildFileMappingArray(
+    private static Array buildFileMappingArray(
             Connection conn, FileMapperOptions mapperOptions) throws SQLException {
         OracleConnection oraConn = conn.unwrap(OracleConnection.class);
 
